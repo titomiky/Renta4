@@ -1,0 +1,61 @@
+        light.parent?.remove(light);
+        if (light.dispose) {
+          light.dispose();
+        }
+      });
+      glowLightsRef.current = [];
+    };
+  }, []);
+
+  const staticParts = useMemo(() => {
+    const parts = {};
+    const emissiveTargets = new Set(["ojoIzquierdoBombilla", "ojoDerechoBombilla", "bocaBombilla", "filamentoBombilla"]);
+    const lights = [];
+    const assignGlowMaterial = (root) => {
+      if (!root) {
+        return;
+      }
+      root.traverse((child) => {
+        if (!emissiveTargets.has(child.name)) {
+          return;
+        }
+        child.traverse((mesh) => {
+          if (mesh.isMesh) {
+            mesh.material = glowMaterialRef.current;
+          }
+        });
+        let light = child.getObjectByName(`${child.name}_GlowLight`);
+        if (!light) {
+          const baseColor = glowMaterialRef.current?.color || new THREE.Color(glowColor);
+          light = new THREE.PointLight(baseColor.clone(), glowIntensity, glowDistance, glowDecay);
+          light.name = `${child.name}_GlowLight`;
+          child.add(light);
+        }
+        light.userData.isBombillaGlow = true;
+        light.color.set(glowColor);
+        light.intensity = glowIntensity;
+        light.distance = glowDistance;
+        light.decay = glowDecay;
+        lights.push(light);
+      });
+    };
+    ['CabezaCristal', 'Rosca', 'Cuerpo', 'BombillaArmature'].forEach((name) => {
+      const original = nodes?.[name];
+      if (!original) {
+        return;
+      }
+      const clone = original.clone(true);
+      clone.matrixAutoUpdate = original.matrixAutoUpdate;
+      if (!clone.matrixAutoUpdate && original.matrix) {
+        clone.matrix.copy(original.matrix);
+        clone.matrix.decompose(clone.position, clone.quaternion, clone.scale);
+      } else {
+        clone.position.copy(original.position);
+        clone.quaternion.copy(original.quaternion);
+        clone.scale.copy(original.scale);
+      }
+      if (name === 'Rosca') {
+        clone.traverse((child) => {
+          if (child.isMesh) {
+            child.material = roscaMaterial;
+          }

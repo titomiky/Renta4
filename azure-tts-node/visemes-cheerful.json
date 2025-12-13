@@ -1,0 +1,186 @@
+[
+  {
+    "visemeId": 0,
+    "offsetMs": 50
+  },
+  {
+    "visemeId": 8,
+    "offsetMs": 50
+  },
+  {
+    "visemeId": 14,
+    "offsetMs": 237.5
+  },
+  {
+    "visemeId": 2,
+    "offsetMs": 287.5
+  },
+  {
+    "visemeId": 0,
+    "offsetMs": 375
+  },
+  {
+    "visemeId": 0,
+    "offsetMs": 1237.5
+  },
+  {
+    "visemeId": 4,
+    "offsetMs": 1237.5
+  },
+  {
+    "visemeId": 15,
+    "offsetMs": 1362.5
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 1425
+  },
+  {
+    "visemeId": 8,
+    "offsetMs": 1500
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 1587.5
+  },
+  {
+    "visemeId": 21,
+    "offsetMs": 1625
+  },
+  {
+    "visemeId": 7,
+    "offsetMs": 1725
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 1750
+  },
+  {
+    "visemeId": 18,
+    "offsetMs": 1800
+  },
+  {
+    "visemeId": 4,
+    "offsetMs": 1912.5
+  },
+  {
+    "visemeId": 14,
+    "offsetMs": 1962.5
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 2012.5
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 2087.5
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 2162.5
+  },
+  {
+    "visemeId": 4,
+    "offsetMs": 2212.5
+  },
+  {
+    "visemeId": 2,
+    "offsetMs": 2275
+  },
+  {
+    "visemeId": 21,
+    "offsetMs": 2337.5
+  },
+  {
+    "visemeId": 14,
+    "offsetMs": 2375
+  },
+  {
+    "visemeId": 2,
+    "offsetMs": 2437.5
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 2487.5
+  },
+  {
+    "visemeId": 20,
+    "offsetMs": 2537.5
+  },
+  {
+    "visemeId": 8,
+    "offsetMs": 2600
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 2675
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 2750
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 2812.5
+  },
+  {
+    "visemeId": 20,
+    "offsetMs": 2887.5
+  },
+  {
+    "visemeId": 8,
+    "offsetMs": 2950
+  },
+  {
+    "visemeId": 8,
+    "offsetMs": 3037.5
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 3150
+  },
+  {
+    "visemeId": 0,
+    "offsetMs": 3249.5
+  },
+  {
+    "visemeId": 20,
+    "offsetMs": 3362.5
+  },
+  {
+    "visemeId": 4,
+    "offsetMs": 3387.5
+  },
+  {
+    "visemeId": 20,
+    "offsetMs": 3475
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 3525
+  },
+  {
+    "visemeId": 2,
+    "offsetMs": 3575
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 3625
+  },
+  {
+    "visemeId": 19,
+    "offsetMs": 3712.5
+  },
+  {
+    "visemeId": 6,
+    "offsetMs": 3762.5
+  },
+  {
+    "visemeId": 2,
+    "offsetMs": 3900
+  },
+  {
+    "visemeId": 0,
+    "offsetMs": 3987.5
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "name": "azure-tts-node",
+  "version": "1.0.0",
+  "main": "azure-tts-example.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "microsoft-cognitiveservices-speech-sdk": "^1.46.0"
+  }
+}
