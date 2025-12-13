@@ -21,7 +21,7 @@ chmod +x startAvatar.sh
 Set-ExecutionPolicy -Scope Process Bypass -Force
 .\startAvatar.ps1
 
-Ambos scripts instalan dependencias, construyen el frontend y levantan pm2 con los servicios `renta4-back` y `renta4-front`.
+Ambos scripts instalan dependencias, construyen el frontend y levantan pm2 con los servicios `renta4-back` y `renta4-front`. El frontend queda servido en http://localhost:5173.
 
 
 ## Descargar avatares de Ready Player me (https://studio.readyplayer.me/)

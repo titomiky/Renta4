@@ -27,12 +27,12 @@ yarn build
 Pop-Location
 
 Write-Host "Reiniciando servicio backend en pm2..."
-pm2 delete renta4-back | Out-Null
-pm2 start yarn --name renta4-back --cwd $BackDir -- start | Out-Null
+pm2 delete renta4-back *>$null
+pm2 start "index.js" --name renta4-back --cwd $BackDir *>$null
 
 Write-Host "Reiniciando servicio frontend en pm2..."
-pm2 delete renta4-front | Out-Null
-pm2 serve "$FrontDir/dist" 4173 --name renta4-front --spa | Out-Null
+pm2 delete renta4-front *>$null
+pm2 serve "$FrontDir/dist" 5173 --name renta4-front --spa *>$null
 
 pm2 save | Out-Null
 

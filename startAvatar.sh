@@ -24,11 +24,11 @@ echo "Instalando dependencias y construyendo el frontend..."
 
 echo "Reiniciando servicio backend en pm2..."
 pm2 delete renta4-back >/dev/null 2>&1 || true
-pm2 start yarn --name renta4-back --cwd "$BACK_DIR" -- start
+pm2 start index.js --name renta4-back --cwd "$BACK_DIR"
 
 echo "Reiniciando servicio frontend en pm2..."
 pm2 delete renta4-front >/dev/null 2>&1 || true
-pm2 serve "$FRONT_DIR/dist" 4173 --name renta4-front --spa
+pm2 serve "$FRONT_DIR/dist" 5173 --name renta4-front --spa
 
 echo "Guardando procesos en pm2..."
 pm2 save
