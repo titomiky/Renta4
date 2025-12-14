@@ -13,10 +13,12 @@ const statusEl = document.getElementById('application-status');
 const dropArea = document.querySelector('.drop-area');
 const cvInput = document.getElementById('cv-input');
 const cvNameEl = document.getElementById('cv-name');
+const modalEl = document.getElementById('application-modal');
 const captchaQuestionEl = document.getElementById('captcha-question');
 const captchaAnswerInput = document.getElementById('captcha-answer');
 const captchaRefreshBtn = document.getElementById('captcha-refresh');
 let captchaSolution = null;
+let modalCloseButtons = [];
 
 if (applicationForm) {
   setupFieldValidation();
@@ -58,10 +60,11 @@ if (applicationForm) {
       return;
     }
 
-    statusEl.textContent = 'Hemos recibido su candidatura con éxito y a la mayor brevedad posible le daremos feedback.';
+    statusEl.textContent = '';
     applicationForm.reset();
     generateCaptcha();
     updateCvName('Ningún archivo seleccionado');
+    showApplicationModal();
   });
 }
 
@@ -143,6 +146,23 @@ if (captchaRefreshBtn) {
   captchaRefreshBtn.addEventListener('click', generateCaptcha);
 }
 
+if (modalEl) {
+  modalCloseButtons = Array.from(modalEl.querySelectorAll('[data-modal-close]'));
+  modalCloseButtons.forEach((btn) => {
+    btn.addEventListener('click', hideApplicationModal);
+  });
+  modalEl.addEventListener('click', (event) => {
+    if (event.target === modalEl) {
+      hideApplicationModal();
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modalEl.classList.contains('is-visible')) {
+      hideApplicationModal();
+    }
+  });
+}
+
 function generateCaptcha() {
   if (!captchaQuestionEl || !captchaAnswerInput) return;
   const a = Math.floor(Math.random() * 6) + 2;
@@ -185,6 +205,21 @@ function validateFields(formData) {
 
 async function submitApplication(formData) {
   console.warn('submitApplication called but API submission is disabled.');
+}
+
+function showApplicationModal() {
+  if (!modalEl) return;
+  modalEl.classList.add('is-visible');
+  modalEl.setAttribute('aria-hidden', 'false');
+  const primaryBtn = modalEl.querySelector('.modal-accept');
+  primaryBtn?.focus();
+}
+
+function hideApplicationModal() {
+  if (!modalEl) return;
+  modalEl.classList.remove('is-visible');
+  modalEl.setAttribute('aria-hidden', 'true');
+  applicationForm?.querySelector('button[type=\"submit\"]')?.focus();
 }
 
 async function isValidPdf(file) {

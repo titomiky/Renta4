@@ -200,6 +200,75 @@ main {
   white-space: nowrap;
 }
 
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 2000;
+}
+
+.modal.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: #fff;
+  max-width: 520px;
+  width: min(90vw, 520px);
+  border-radius: 1.2rem;
+  padding: 2.5rem 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+.modal-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  margin: 0 auto 1rem;
+  font-size: 2.5rem;
+  line-height: 72px;
+  background: rgba(21, 128, 61, 0.12);
+  color: #15803d;
+  font-weight: 700;
+}
+
+.modal h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+}
+
+.modal p {
+  margin: 0 0 1.5rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+}
+
+.modal-accept {
+  width: 100%;
+  justify-content: center;
+}
+
 .subsection {
   margin-bottom: 2rem;
 }
