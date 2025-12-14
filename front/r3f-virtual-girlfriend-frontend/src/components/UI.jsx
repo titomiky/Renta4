@@ -3,7 +3,14 @@ import { useChat } from "../hooks/useChat";
 
 export const UI = ({ hidden, ...props }) => {
   const input = useRef();
-  const { chat, loading, cameraZoomed, setCameraZoomed, message } = useChat();
+  const {
+    chat,
+    loading,
+    cameraZoomed,
+    setCameraZoomed,
+    message,
+    audioBlocked,
+  } = useChat();
   const recognitionRef = useRef(null);
   const transcriptRef = useRef("");
   const pendingTranscriptRef = useRef("");
@@ -154,6 +161,11 @@ export const UI = ({ hidden, ...props }) => {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none">
+        {audioBlocked && (
+          <div className="pointer-events-auto self-center bg-amber-200 text-amber-900 px-4 py-2 rounded-md shadow">
+            Activa el audio haciendo clic en la pantalla para que Renti pueda hablar.
+          </div>
+        )}
         <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
           <h1 className="font-black text-xl">Renta 4</h1>
           <p>Innovación rentable</p>

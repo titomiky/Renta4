@@ -1,27 +1,49 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const chat = async (message) => {
-    setLoading(true);
-    const data = await fetch(`${backendUrl}/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message }),
-    });
-    const resp = (await data.json()).messages;
-    setMessages((messages) => [...messages, ...resp]);
-    setLoading(false);
-  };
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState();
   const [loading, setLoading] = useState(false);
   const [cameraZoomed, setCameraZoomed] = useState(true);
+  const initializationRef = useRef(false);
+  const [audioBlocked, setAudioBlocked] = useState(false);
+
+  const chat = useCallback(async (message) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${backendUrl}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) {
+        throw new Error(`Chat request failed with status ${response.status}`);
+      }
+      const data = await response.json();
+      const resp = Array.isArray(data?.messages) ? data.messages : [];
+      if (resp.length) {
+        setMessages((messages) => [...messages, ...resp]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch chat response", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const onMessagePlayed = () => {
     setMessages((messages) => messages.slice(1));
   };
@@ -34,6 +56,14 @@ export const ChatProvider = ({ children }) => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (initializationRef.current) {
+      return;
+    }
+    initializationRef.current = true;
+    chat("");
+  }, [chat]);
+
   return (
     <ChatContext.Provider
       value={{
@@ -43,6 +73,8 @@ export const ChatProvider = ({ children }) => {
         loading,
         cameraZoomed,
         setCameraZoomed,
+        audioBlocked,
+        setAudioBlocked,
       }}
     >
       {children}

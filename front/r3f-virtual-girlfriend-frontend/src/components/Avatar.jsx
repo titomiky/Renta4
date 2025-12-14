@@ -123,7 +123,7 @@ export function Avatar(props) {
     "/models/ChicaConBombilla.glb"
   );
 
-  const { message, onMessagePlayed, chat } = useChat();
+  const { message, onMessagePlayed, chat, setAudioBlocked } = useChat();
 
   const [lipsync, setLipsync] = useState();
   const { showGirl } = useControls(() => ({
@@ -153,6 +153,9 @@ export function Avatar(props) {
 
   const glowMaterialRef = useRef();
   const glowLightsRef = useRef([]);
+  const activeAudioRef = useRef(null);
+  const pendingAudioRef = useRef(null);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const animationTargetBlacklist = useMemo(() => new Set(["Armature"]), []);
   if (!glowMaterialRef.current) {
     const initialColor = new THREE.Color(glowColor);
@@ -192,6 +195,10 @@ export function Avatar(props) {
       glowLightsRef.current = [];
     };
   }, []);
+
+  useEffect(() => {
+    setAudioBlocked(autoplayBlocked);
+  }, [autoplayBlocked, setAudioBlocked]);
 
   const staticParts = useMemo(() => {
     const parts = {};
@@ -366,11 +373,11 @@ export function Avatar(props) {
 
   useEffect(() => {
     if (!bombillaMouth) {
-      console.warn('GLTF: bocaBombilla no encontrada en BombillaArmature ni CabezaCristal; la bombilla no podrá sincronizar visemas.');
+      console.warn('GLTF: bocaBombilla no encontrada en BombillaArmature ni CabezaCristal; la bombilla no podrÃ¡ sincronizar visemas.');
       return;
     }
     if (!bombillaMouth.mesh) {
-      console.warn('GLTF: bocaBombilla no tiene shape keys; se usará el fallback de escala.');
+      console.warn('GLTF: bocaBombilla no tiene shape keys; se usarÃ¡ el fallback de escala.');
       return;
     }
     const missing = Object.values(corresponding).filter((targetName) => {
@@ -387,19 +394,87 @@ export function Avatar(props) {
   }, [bombillaMouth]);
 
   useEffect(() => {
-    console.log(message);
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.onended = null;
+    }
+    pendingAudioRef.current = null;
+
     if (!message) {
       setAnimation("Idle");
+      setFacialExpression("default");
+      setLipsync(null);
+      setAudio(undefined);
+      setAutoplayBlocked(false);
       return;
     }
     setAnimation(message.animation);
     setFacialExpression(message.facialExpression);
     setLipsync(message.lipsync);
+
     const audio = new Audio("data:audio/mp3;base64," + message.audio);
-    audio.play();
-    setAudio(audio);
     audio.onended = onMessagePlayed;
-  }, [message]);
+    activeAudioRef.current = audio;
+    setAudio(audio);
+
+    const attemptPlay = async () => {
+      try {
+        await audio.play();
+        setAutoplayBlocked(false);
+        pendingAudioRef.current = null;
+      } catch (error) {
+        if (error?.name === "NotAllowedError") {
+          pendingAudioRef.current = audio;
+          setAutoplayBlocked(true);
+        } else {
+          console.error("Audio playback failed", error);
+          onMessagePlayed();
+        }
+      }
+    };
+
+    attemptPlay();
+
+    return () => {
+      audio.pause();
+      audio.onended = null;
+      if (pendingAudioRef.current === audio) {
+        pendingAudioRef.current = null;
+      }
+      if (activeAudioRef.current === audio) {
+        activeAudioRef.current = null;
+      }
+    };
+  }, [message, onMessagePlayed]);
+
+  useEffect(() => {
+    if (!autoplayBlocked) {
+      return;
+    }
+    const unlock = () => {
+      const pending = pendingAudioRef.current;
+      if (!pending) {
+        return;
+      }
+      pending
+        .play()
+        .then(() => {
+          pendingAudioRef.current = null;
+          setAutoplayBlocked(false);
+        })
+        .catch((error) => {
+          if (error?.name !== "NotAllowedError") {
+            console.error("Failed to resume audio playback", error);
+          }
+        });
+    };
+    window.addEventListener("pointerdown", unlock);
+    window.addEventListener("keydown", unlock);
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, [autoplayBlocked]);
 
   const { animations } = useGLTF("/models/animations.glb");
 
@@ -607,7 +682,7 @@ export function Avatar(props) {
     }
 
     const appliedMorphTargets = [];
-    if (message && lipsync) {
+    if (message && lipsync && audio && !audio.paused) {
       const currentAudioTime = audio.currentTime;
       for (let i = 0; i < lipsync.mouthCues.length; i++) {
         const mouthCue = lipsync.mouthCues[i];
