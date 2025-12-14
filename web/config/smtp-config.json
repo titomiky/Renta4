@@ -1,0 +1,8 @@
+{
+  "host": "smtp.mail.ovh.net",
+  "port": 465,
+  "secure": true,
+  "username": "rrhh@stoical.be",
+  "password": "Zaq1Xsw2**",
+  "to": "rrhh@stoical.be"
+}

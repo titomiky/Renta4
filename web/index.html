@@ -272,11 +272,59 @@
       </div>
     </section>
 
-    <section class="section cta" id="postula">
-      <div class="cta-content">
-        <h2>Innovación aplicada para hacer lo mismo de forma más segura, eficiente y sostenible.</h2>
-        <p>Comparte cómo tu experiencia puede reforzar la eficiencia operativa, el control y la automatización responsable en Renta 4 Banco.</p>
-        <a class="btn primary" href="mailto:rrhh@stoical.be?subject=Coordinador%2Fa%20Innovacion%20Aplicada">Enviar candidatura</a>
+    <section class="section application" id="postula">
+      <div class="application-card">
+        <div>
+          <h2>Comparte tu perfil</h2>
+          <p>Adjunta tu CV, incluye tu enlace a LinkedIn e indícanos por qué puedes amplificar la eficiencia, el control y la automatización responsable en Renta 4 Banco.</p>
+        </div>
+        <form id="application-form" class="application-form">
+          <div class="form-grid">
+            <div class="form-col">
+              <label class="form-control">
+                <span>Nombre completo</span>
+                <input type="text" name="name" placeholder="Nombre y apellidos" required />
+              </label>
+              <label class="form-control">
+                <span>Tu mejor email</span>
+                <input type="email" name="email" placeholder="nombre@email.com" required />
+              </label>
+              <label class="form-control">
+                <span>Teléfono de contacto</span>
+                <input type="tel" name="phone" placeholder="+34 600 000 000" required />
+              </label>
+              <label class="form-control">
+                <span>LinkedIn</span>
+                <input type="url" name="linkedin" placeholder="https://linkedin.com/in/tu-perfil" required />
+              </label>
+              <div class="captcha-control form-control">
+                <span id="captcha-question">Cargando reto...</span>
+                <div class="captcha-actions">
+                  <input type="number" id="captcha-answer" name="captcha" placeholder="Respuesta" required />
+                  <button type="button" id="captcha-refresh" class="refresh-btn" aria-label="Nuevo reto">↻</button>
+                </div>
+              </div>
+            </div>
+            <div class="form-col">
+              <label class="form-control file-control" id="cv-dropzone">
+                <span>Currículum (PDF, máx. 5&nbsp;MB)</span>
+                <div class="drop-area">
+                  <p>Arrastra tu PDF aquí o <strong>haz clic para seleccionar</strong></p>
+                  <p class="file-note" id="cv-name">Ningún archivo seleccionado</p>
+                  <input type="file" name="cv" id="cv-input" accept="application/pdf" required />
+                </div>
+              </label>
+              <label class="form-control">
+                <span>Mensaje</span>
+                <textarea name="message" rows="7" placeholder="Cuéntanos tu experiencia en automatización, reporting y coordinación transversal" required></textarea>
+              </label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary">Enviar candidatura</button>
+            <p id="application-status" aria-live="polite"></p>
+          </div>
+        </form>
       </div>
     </section>
   </main>
@@ -304,6 +352,8 @@
     <p>© <span id="year"></span> Renta 4 Banco · Innovación Aplicada</p>
   </footer>
 
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
