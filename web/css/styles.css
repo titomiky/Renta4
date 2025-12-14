@@ -498,6 +498,7 @@ main {
   justify-content: center;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 999;
 }
 
 .whatsapp-btn svg {
@@ -529,6 +530,7 @@ main {
   justify-content: center;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 999;
 }
 
 .avatar-btn svg {
@@ -653,6 +655,10 @@ main {
 
   .pdf-tag {
     width: 100%;
+  }
+
+  .no-wrap {
+    white-space: normal;
   }
 
   .whatsapp-btn {

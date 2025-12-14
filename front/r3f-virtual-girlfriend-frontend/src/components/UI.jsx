@@ -29,7 +29,8 @@ export const UI = ({ hidden, ...props }) => {
       }
       return false;
     }
-    if (!loading && !message) {
+    const canSend = !loading && (!message || audioBlocked);
+    if (canSend) {
       chat(text);
       if (field) {
         field.value = "";
