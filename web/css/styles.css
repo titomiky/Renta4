@@ -200,6 +200,22 @@ main {
   white-space: nowrap;
 }
 
+.subsection {
+  margin-bottom: 2rem;
+}
+
+.subsection h3 {
+  margin-bottom: 0.75rem;
+  color: var(--brand-dark);
+}
+
+.subsection ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -233,6 +249,14 @@ main {
   margin-bottom: 1rem;
 }
 
+.pdf-description {
+  margin-bottom: 1.5rem;
+}
+
+.pdf-description:last-of-type {
+  margin-bottom: 0;
+}
+
 .pdf-tag {
   display: inline-flex;
   align-items: center;
@@ -249,6 +273,18 @@ main {
 .pdf-tag span {
   font-weight: 600;
   color: var(--brand-dark);
+}
+
+.message blockquote {
+  margin: 0;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(171, 0, 41, 0.2);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--brand-dark);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
 }
 
 .cta {
@@ -289,9 +325,40 @@ main {
   fill: #fff;
 }
 
+.whatsapp-btn img {
+  width: 2rem;
+  height: 2rem;
+}
+
 .whatsapp-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 35px rgba(37, 211, 102, 0.4);
+}
+
+.avatar-btn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 6rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar-btn svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  fill: #fff;
+}
+
+.avatar-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 35px rgba(171, 0, 41, 0.4);
 }
 
 .sr-only {
@@ -341,5 +408,135 @@ main {
   .hero-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .assistant-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .assistant-visual .orb {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    min-height: 60vh;
+  }
+
+  .grid.two-col,
+  .grid.cards,
+  .metrics {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta {
+    text-align: center;
+  }
+
+  .cta .btn {
+    align-self: center;
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 2rem 1.5rem;
+  }
+
+  .hero {
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .grid.cards {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .subsection ul {
+    padding-left: 1rem;
+  }
+
+  .pdf-tag {
+    width: 100%;
+  }
+
+  .whatsapp-btn {
+    right: 1rem;
+    bottom: 1rem;
+  }
+}
+.assistant-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: clamp(2rem, 4vw, 3rem);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.assistant-content h2 {
+  margin-top: 0;
+}
+
+.assistant-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--brand-dark);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.assistant-visual .orb {
+  width: 170px;
+  height: 170px;
+  background: radial-gradient(circle at top, rgba(171, 0, 41, 0.7), rgba(92, 0, 22, 0.95));
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 60px rgba(171, 0, 41, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 3s ease-in-out infinite;
+  text-decoration: none;
+}
+
+.assistant-visual svg {
+  width: 80px;
+  height: 80px;
+  fill: #fff;
+}
+
+.assistant-visual span {
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
   }
 }
