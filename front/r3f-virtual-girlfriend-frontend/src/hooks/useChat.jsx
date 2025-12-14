@@ -7,7 +7,32 @@ import {
   useState,
 } from "react";
 
-const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const getBackendUrl = () => {
+  const normalize = (value) =>
+    typeof value === "string" ? value.replace(/\/$/, "") : null;
+  if (typeof window !== "undefined") {
+    const runtimeUrl =
+      window.APP_API_BASE_URL ||
+      window.API_BASE_URL ||
+      window.__APP_API_BASE_URL__;
+    if (runtimeUrl) {
+      return normalize(runtimeUrl);
+    }
+  }
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    return normalize(envUrl);
+  }
+  if (typeof window !== "undefined" && window.location?.origin) {
+    const { origin, port } = window.location;
+    if (!port || port === "3000") {
+      return normalize(origin);
+    }
+  }
+  return "http://localhost:3000";
+};
+
+const backendUrl = getBackendUrl();
 
 const ChatContext = createContext();
 

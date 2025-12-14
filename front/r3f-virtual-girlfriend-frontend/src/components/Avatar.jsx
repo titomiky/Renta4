@@ -373,11 +373,11 @@ export function Avatar(props) {
 
   useEffect(() => {
     if (!bombillaMouth) {
-      console.warn('GLTF: bocaBombilla no encontrada en BombillaArmature ni CabezaCristal; la bombilla no podrá sincronizar visemas.');
+      console.warn('GLTF: bocaBombilla no encontrada en BombillaArmature ni CabezaCristal; la bombilla no podrÃ¡ sincronizar visemas.');
       return;
     }
     if (!bombillaMouth.mesh) {
-      console.warn('GLTF: bocaBombilla no tiene shape keys; se usará el fallback de escala.');
+      console.warn('GLTF: bocaBombilla no tiene shape keys; se usarÃ¡ el fallback de escala.');
       return;
     }
     const missing = Object.values(corresponding).filter((targetName) => {
@@ -479,7 +479,7 @@ export function Avatar(props) {
   const { animations } = useGLTF("/models/animations.glb");
 
   const sanitizedAnimations = useMemo(() => {
-    if (!Array.isArray(animations)) {
+    if (!showGirl || !Array.isArray(animations)) {
       return [];
     }
     return animations.map((clip) => {
@@ -507,7 +507,7 @@ export function Avatar(props) {
       cleanedClip.resetDuration();
       return cleanedClip;
     });
-  }, [animations, scene, nodes]);
+  }, [animations, scene, nodes, showGirl]);
 
   const group = useRef();
   const { actions, mixer } = useAnimations(sanitizedAnimations, group);
