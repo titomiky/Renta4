@@ -5,14 +5,8 @@ if (yearEl) {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_MESSAGE_LENGTH = 2000;
-const SMTP_CONFIG = {
-  host: 'smtp.mail.ovh.net',
-  port: 465,
-  secure: true,
-  username: 'rrhh@stoical.be',
-  password: 'Zaq1Xsw2**', // Sustituye por la contraseña real
-  to: 'rrhh@stoical.be'
-};
+const API_BASE_URL = (window.APP_API_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
+const APPLY_ENDPOINT = `${API_BASE_URL}/api/apply`;
 
 const applicationForm = document.getElementById('application-form');
 const statusEl = document.getElementById('application-status');
@@ -65,7 +59,7 @@ if (applicationForm) {
     }
 
     try {
-      await sendApplication(formData, file, SMTP_CONFIG);
+      await submitApplication(formData);
       statusEl.textContent = '¡Gracias! Hemos recibido tu candidatura.';
       applicationForm.reset();
       generateCaptcha();
@@ -195,72 +189,15 @@ function validateFields(formData) {
   return { valid: true };
 }
 
-async function sendApplication(formData, file, emailConfig) {
-  if (!window.Email) {
-    throw new Error('La librería SMTP no se ha cargado.');
-  }
-
-  if (!emailConfig.password || emailConfig.password === 'YOUR_OVH_PASSWORD') {
-    throw new Error('Define la contraseña real de la cuenta SMTP antes de enviar.');
-  }
-
-  const attachment = await toBase64(file);
-  const applicantName = escapeHtml(formData.get('name'));
-  const applicantEmail = formData.get('email');
-  const body = `
-    <p><strong>Nombre:</strong> ${applicantName}</p>
-    <p><strong>Email:</strong> ${escapeHtml(formData.get('email'))}</p>
-    <p><strong>Teléfono:</strong> ${escapeHtml(formData.get('phone'))}</p>
-    <p><strong>LinkedIn:</strong> ${escapeHtml(formData.get('linkedin'))}</p>
-    <p><strong>Mensaje:</strong><br/>${sanitizeMessage(formData.get('message'))}</p>
-  `;
-
-  const response = await Email.send({
-    Host: emailConfig.host,
-    Port: emailConfig.port,
-    SecureToken: '',
-    Username: emailConfig.username,
-    Password: emailConfig.password,
-    To: emailConfig.to,
-    From: emailConfig.username,
-    Cc: applicantEmail,
-    Subject: `Nueva candidatura: ${applicantName}`,
-    Body: body,
-    Attachments: [{
-      name: file.name,
-      data: `data:application/pdf;base64,${attachment}`
-    }]
+async function submitApplication(formData) {
+  const response = await fetch(APPLY_ENDPOINT, {
+    method: 'POST',
+    body: formData
   });
-
-  if (response !== 'OK') {
-    throw new Error(response || 'Error SMTP');
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.ok !== true) {
+    throw new Error(data.error || 'No pudimos enviar tu candidatura.');
   }
-}
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function escapeHtml(text = '') {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function sanitizeMessage(text = '') {
-  const clean = escapeHtml(text);
-  return clean.replace(/\r?\n/g, '<br/>');
 }
 
 async function isValidPdf(file) {
