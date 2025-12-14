@@ -424,10 +424,59 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+const buildStaticAvatarMessage = async (payload, index = 0) => {
+  try {
+    const avatarMessage = await createAvatarMessage(payload, index);
+    return avatarMessage;
+  } catch (error) {
+    console.error("Failed to build avatar message", error);
+    throw error;
+  }
+};
+
+const buildCredentialWarningMessage = async (text) =>
+  buildStaticAvatarMessage(
+    {
+      text,
+      facialExpression: "angry",
+      animation: "Angry",
+    },
+    0
+  );
+
+const respondWithCredentialWarning = async (res, text, status = 200) => {
+  try {
+    const message = await buildCredentialWarningMessage(text);
+    res.status(status).send({ messages: [message] });
+  } catch (error) {
+    res.status(status).send({
+      error: "Credential warning",
+      detail: text,
+    });
+  }
+};
+
+const handleOpenAiError = async (error, res) => {
+  const statusCode = error?.status ?? error?.response?.status ?? null;
+  const authError = statusCode === 401 || statusCode === 403;
+  if (authError) {
+    await respondWithCredentialWarning(
+      res,
+      "Necesito una OpenAI API Key válida para continuar. Revisa las credenciales configuradas en el backend, por favor."
+    );
+    return;
+  }
+  console.error("OpenAI completion failed", error);
+  res.status(502).send({
+    error: "OpenAI completion failed",
+    detail: error.message,
+  });
+};
+
 app.post("/chat", async (req, res) => {
   if (!azureSpeechKey || !azureSpeechRegion) {
-    res.send({
-      messages: [
+    try {
+      const warning = [
         {
           text: "Please my dear, don't forget to add your API keys!",
           audio: await audioFileToBase64("audios/api_0.wav"),
@@ -442,8 +491,15 @@ app.post("/chat", async (req, res) => {
           facialExpression: "smile",
           animation: "Laughing",
         },
-      ],
-    });
+      ];
+      res.send({ messages: warning });
+    } catch (error) {
+      console.error("Failed to send Azure credential warning", error);
+      res.status(500).send({
+        error: "Azure credentials not configured",
+        detail: error.message,
+      });
+    }
     return;
   }
 
@@ -473,15 +529,10 @@ app.post("/chat", async (req, res) => {
 
   if (openai.apiKey === "-") {
     try {
-      const apiWarning = await createAvatarMessage(
-        {
-          text: "Antes de continuar necesito que añadas tu OpenAI API Key al backend para poder conversar contigo.",
-          facialExpression: "angry",
-          animation: "Angry",
-        },
-        0
+      await respondWithCredentialWarning(
+        res,
+        "Antes de continuar necesito que añadas tu OpenAI API Key al backend para poder conversar contigo."
       );
-      res.send({ messages: [apiWarning] });
     } catch (error) {
       console.error("Failed to build API key warning", error);
       res.status(500).send({
@@ -535,11 +586,7 @@ app.post("/chat", async (req, res) => {
       ],
     });
   } catch (error) {
-    console.error("OpenAI completion failed", error);
-    res.status(502).send({
-      error: "OpenAI completion failed",
-      detail: error.message,
-    });
+    await handleOpenAiError(error, res);
     return;
   }
 
