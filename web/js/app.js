@@ -5,6 +5,14 @@ if (yearEl) {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_MESSAGE_LENGTH = 2000;
+const SMTP_CONFIG = {
+  host: 'smtp.mail.ovh.net',
+  port: 465,
+  secure: true,
+  username: 'rrhh@stoical.be',
+  password: 'Zaq1Xsw2**', // Sustituye por la contraseña real
+  to: 'rrhh@stoical.be'
+};
 
 const applicationForm = document.getElementById('application-form');
 const statusEl = document.getElementById('application-status');
@@ -29,12 +37,6 @@ if (applicationForm) {
     if (!validateCaptcha()) {
       statusEl.textContent = 'Resuelve la pregunta de seguridad para continuar.';
       generateCaptcha();
-      return;
-    }
-
-    const config = await loadSmtpConfig();
-    if (!config) {
-      statusEl.textContent = 'No podemos enviar tu candidatura en este momento. Inténtalo más tarde.';
       return;
     }
 
@@ -63,7 +65,7 @@ if (applicationForm) {
     }
 
     try {
-      await sendApplication(formData, file, config);
+      await sendApplication(formData, file, SMTP_CONFIG);
       statusEl.textContent = '¡Gracias! Hemos recibido tu candidatura.';
       applicationForm.reset();
       generateCaptcha();
