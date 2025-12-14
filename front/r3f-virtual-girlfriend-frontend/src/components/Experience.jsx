@@ -44,7 +44,10 @@ export const Experience = () => {
   const cameraControls = useRef();
   const { cameraZoomed } = useChat();
   const { scene } = useThree();
-  const backgroundTexture = useTexture("/renta4Background.jpg");
+  const assetBase =
+    typeof window !== "undefined" ? window.ASSET_BASE_URL || "" : "";
+  const texturesBase = assetBase.replace(/\/$/, "");
+  const backgroundTexture = useTexture(`${texturesBase}/renta4Background.jpg`);
 
   useEffect(() => {
     cameraControls.current.setLookAt(0, 2, 5, 0, 1.5, 0);
@@ -61,7 +64,6 @@ export const Experience = () => {
   useEffect(() => {
     if (!backgroundTexture) return;
     backgroundTexture.colorSpace = THREE.SRGBColorSpace;
-    backgroundTexture.encoding = THREE.sRGBEncoding;
     backgroundTexture.needsUpdate = true;
     scene.background = backgroundTexture;
     return () => {
@@ -72,7 +74,7 @@ export const Experience = () => {
   return (
     <>
       <CameraControls ref={cameraControls} />
-      <Environment files="/hdri/venice_sunset_1k.hdr" />
+      <Environment files={`${texturesBase}/hdri/venice_sunset_1k.hdr`} />
       {/* Wrapping Dots into Suspense to prevent Blink when Troika/Font is loaded */}
       <Suspense>
         <Dots position-y={1.75} position-x={-0.02} />
