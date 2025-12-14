@@ -58,16 +58,10 @@ if (applicationForm) {
       return;
     }
 
-    try {
-      await submitApplication(formData);
-      statusEl.textContent = '¡Gracias! Hemos recibido tu candidatura.';
-      applicationForm.reset();
-      generateCaptcha();
-      updateCvName('Ningún archivo seleccionado');
-    } catch (error) {
-      console.error('Error al enviar candidatura', error);
-      statusEl.textContent = 'No pudimos enviar tu candidatura. Inténtalo de nuevo más tarde.';
-    }
+    statusEl.textContent = 'Hemos recibido su candidatura con éxito y a la mayor brevedad posible le daremos feedback.';
+    applicationForm.reset();
+    generateCaptcha();
+    updateCvName('Ningún archivo seleccionado');
   });
 }
 
@@ -190,14 +184,7 @@ function validateFields(formData) {
 }
 
 async function submitApplication(formData) {
-  const response = await fetch(APPLY_ENDPOINT, {
-    method: 'POST',
-    body: formData
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.ok !== true) {
-    throw new Error(data.error || 'No pudimos enviar tu candidatura.');
-  }
+  console.warn('submitApplication called but API submission is disabled.');
 }
 
 async function isValidPdf(file) {

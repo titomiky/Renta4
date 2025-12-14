@@ -6,8 +6,6 @@ import { fileURLToPath } from "url";
 import { promises as fs } from "fs";
 import OpenAI from "openai";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
-import multer from "multer";
-import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -30,113 +28,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 const port = 3000;
-
-const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
-const MAX_MESSAGE_LENGTH = 2000;
-const smtpHost = process.env.SMTP_HOST;
-const smtpPort = Number(process.env.SMTP_PORT || 465);
-const smtpSecure =
-  (process.env.SMTP_SECURE || "true").toString().toLowerCase() === "true";
-const smtpUser = process.env.SMTP_USER;
-const smtpPass = process.env.SMTP_PASS;
-const smtpTo = process.env.SMTP_TO || smtpUser;
-const smtpFrom = process.env.SMTP_FROM || smtpUser;
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_ATTACHMENT_SIZE },
-  fileFilter: (_req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
-      cb(null, true);
-    } else {
-      cb(new Error("Solo se permiten archivos PDF"));
-    }
-  },
-});
-
-const nameRegex = /^[A-Za-zÀ-ÿ'´`ñÑ\-.\s]{3,80}$/;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex = /^[+]?[-\d\s().]{7,20}$/;
-
-const escapeHtml = (value = "") =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-
-const sanitizeMessage = (value = "") =>
-  escapeHtml(value).replace(/\r?\n/g, "<br/>");
-
-const validateApplicationPayload = ({ name, email, phone, linkedin, message }) => {
-  if (!nameRegex.test(name || "")) {
-    return "Introduce un nombre válido (solo letras y espacios).";
-  }
-  if (!emailRegex.test(email || "")) {
-    return "Introduce un email válido.";
-  }
-  if (!phoneRegex.test(phone || "")) {
-    return "Introduce un teléfono válido.";
-  }
-  try {
-    const url = new URL(linkedin || "");
-    if (!url.hostname.includes("linkedin.com")) {
-      return "Introduce un enlace de LinkedIn válido.";
-    }
-  } catch {
-    return "Introduce un enlace de LinkedIn válido.";
-  }
-  const trimmedMessage = (message || "").trim();
-  if (trimmedMessage.length < 20 || trimmedMessage.length > MAX_MESSAGE_LENGTH) {
-    return "El mensaje debe tener entre 20 y 2000 caracteres.";
-  }
-  if (/<script|<\/|onerror=|onload=/i.test(trimmedMessage)) {
-    return "El mensaje contiene contenido no permitido.";
-  }
-  return null;
-};
-
-const createTransporter = () => {
-  if (!smtpHost || !smtpUser || !smtpPass || !smtpTo) {
-    throw new Error("SMTP no está configurado correctamente.");
-  }
-
-  return nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpSecure,
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
-  });
-};
-
-const sendApplicationEmail = async ({ name, email, phone, linkedin, message, file }) => {
-  const transporter = createTransporter();
-  const html = `
-    <p><strong>Nombre:</strong> ${escapeHtml(name)}</p>
-    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-    <p><strong>Teléfono:</strong> ${escapeHtml(phone)}</p>
-    <p><strong>LinkedIn:</strong> ${escapeHtml(linkedin)}</p>
-    <p><strong>Mensaje:</strong><br/>${sanitizeMessage(message)}</p>
-  `;
-
-  await transporter.sendMail({
-    from: smtpFrom || smtpUser,
-    to: smtpTo,
-    cc: email,
-    subject: `Nueva candidatura: ${name}`,
-    html,
-    attachments: [
-      {
-        filename: file.originalname || "cv.pdf",
-        content: file.buffer,
-        contentType: file.mimetype,
-      },
-    ],
-  });
-};
 
 const DEFAULT_VISEME_DURATION = 0.12;
 const MIN_SEGMENT_LENGTH = 0.05;
@@ -341,45 +232,6 @@ const buildLipsyncData = (visemeEvents, audioDurationSec) => {
     mouthCues,
   };
 };
-
-app.post("/api/apply", (req, res) => {
-  upload.single("cv")(req, res, async (err) => {
-    if (err) {
-      const status = err instanceof multer.MulterError ? 400 : 400;
-      return res.status(status).json({ error: err.message || "Error al procesar el archivo." });
-    }
-
-    try {
-      const { name, email, phone, linkedin, message } = req.body || {};
-      const validationError = validateApplicationPayload({
-        name,
-        email,
-        phone,
-        linkedin,
-        message,
-      });
-      if (validationError) {
-        return res.status(400).json({ error: validationError });
-      }
-      if (!req.file) {
-        return res.status(400).json({ error: "Adjunta tu CV en PDF." });
-      }
-
-      await sendApplicationEmail({
-        name,
-        email,
-        phone,
-        linkedin,
-        message,
-        file: req.file,
-      });
-      res.json({ ok: true });
-    } catch (error) {
-      console.error("Error enviando candidatura", error);
-      res.status(500).json({ error: "No pudimos enviar tu candidatura." });
-    }
-  });
-});
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
