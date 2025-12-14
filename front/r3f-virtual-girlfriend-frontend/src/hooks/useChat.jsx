@@ -23,13 +23,10 @@ const getBackendUrl = () => {
   if (envUrl) {
     return normalize(envUrl);
   }
-  if (typeof window !== "undefined" && window.location?.origin) {
-    const { origin, port } = window.location;
-    if (!port || port === "3000") {
-      return normalize(origin);
-    }
+  if (import.meta.env.DEV) {
+    return "http://localhost:3000";
   }
-  return "http://localhost:3000";
+  return "https://r4api.stoical.be";
 };
 
 const backendUrl = getBackendUrl();
